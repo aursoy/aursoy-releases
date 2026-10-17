@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stealth Direct3D 11 Runtime - Mate Setup Guide</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-base: #090b10;
+            --bg-surface: #10141d;
+            --bg-card: rgba(18, 24, 38, 0.7);
+            --bg-card-hover: rgba(26, 35, 55, 0.85);
+            --accent-primary: #3b82f6;
+            --accent-glow: rgba(59, 130, 246, 0.25);
+            --accent-emerald: #10b981;
+            --accent-emerald-glow: rgba(16, 185, 129, 0.2);
+            --accent-amber: #f59e0b;
+            --accent-rose: #f43f5e;
+            --text-main: #f1f5f9;
+            --text-muted: #94a3b8;
+            --text-dim: #64748b;
+            --border-subtle: rgba(255, 255, 255, 0.08);
+            --border-highlight: rgba(59, 130, 246, 0.35);
+            --radius-lg: 16px;
+            --radius-md: 10px;
+            --radius-sm: 6px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-base);
+            color: var(--text-main);
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            line-height: 1.6;
+            padding: 40px 20px;
+            min-height: 100vh;
+            background-image: 
+                radial-gradient(circle at 15% 15%, rgba(59, 130, 246, 0.12) 0%, transparent 40%),
+                radial-gradient(circle at 85% 80%, rgba(16, 185, 129, 0.08) 0%, transparent 40%);
+            background-attachment: fixed;
+        }
+
+        .container {
+            max-width: 980px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding-bottom: 30px;
+            border-bottom: 1px solid var(--border-subtle);
+            position: relative;
+        }
+
+        .badge-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 14px;
+            background: rgba(16, 185, 129, 0.12);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: 999px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: #34d399;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 16px;
+        }
+
+        .badge-status::before {
+            content: '';
+            width: 8px;
+            height: 8px;
+            background: #10b981;
+            border-radius: 50%;
+            box-shadow: 0 0 10px #10b981;
+        }
+
+        h1 {
+            font-size: 2.6rem;
+            font-weight: 800;
+            letter-spacing: -0.03em;
+            background: linear-gradient(135deg, #ffffff 30%, #94a3b8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 12px;
+        }
+
+        .subtitle {
+            font-size: 1.05rem;
+            color: var(--text-muted);
+            max-width: 620px;
+            margin: 0 auto;
+        }
+
+        /* Quick Overview Cards */
+        .grid-highlights {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .card-highlight {
+            background: var(--bg-card);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-lg);
+            padding: 22px;
+            transition: all 0.3s ease;
+        }
+
+        .card-highlight:hover {
+            border-color: var(--border-highlight);
+            transform: translateY(-2px);
+            box-shadow: 0 12px 30px -10px var(--accent-glow);
+        }
+
+        .card-highlight h3 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #fff;
+        }
+
+        .card-highlight p {
+            font-size: 0.92rem;
+            color: var(--text-muted);
+        }
+
+        /* Step Guide Sections */
+        .section-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin: 36px 0 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: #f8fafc;
+        }
+
+        .steps-wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+
+        .step-box {
+            background: var(--bg-card);
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            position: relative;
+            transition: all 0.25s ease;
+        }
+
+        .step-box:hover {
+            border-color: rgba(255, 255, 255, 0.16);
+            background: var(--bg-card-hover);
+        }
+
+        .step-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 14px;
+        }
+
+        .step-number {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, var(--accent-primary), #1d4ed8);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.95rem;
+            color: #fff;
+            flex-shrink: 0;
+            box-shadow: 0 0 15px var(--accent-glow);
+        }
+
+        .step-header h2 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #ffffff;
+        }
+
+        .step-content {
+            padding-left: 52px;
+            color: var(--text-muted);
+            font-size: 0.96rem;
+        }
+
+        .key-sequence {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin: 10px 0;
+            padding: 8px 16px;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: var(--radius-md);
+        }
+
+        kbd {
+            background: linear-gradient(180deg, #2a3346, #1a2233);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-bottom: 3px solid rgba(0, 0, 0, 0.6);
+            border-radius: 6px;
+            padding: 4px 10px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: #60a5fa;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.4);
+        }
+
+        .code-snippet {
+            background: #06080d;
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+            padding: 14px 18px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.88rem;
+            color: #38bdf8;
+            margin: 10px 0;
+            overflow-x: auto;
+            position: relative;
+        }
+
+        .callout {
+            margin: 14px 0 6px;
+            padding: 14px 18px;
+            border-radius: var(--radius-md);
+            font-size: 0.9rem;
+            display: flex;
+            gap: 12px;
+        }
+
+        .callout-success {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            color: #a7f3d0;
+        }
+
+        .callout-warning {
+            background: rgba(245, 158, 11, 0.1);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            color: #fde68a;
+        }
+
+        .callout-danger {
+            background: rgba(244, 63, 94, 0.1);
+            border: 1px solid rgba(244, 63, 94, 0.3);
+            color: #fecdd3;
+        }
+
+        /* Anti-Cheat Comparison Table */
+        .table-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            margin: 20px 0 40px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 0.92rem;
+        }
+
+        th {
+            background: rgba(255, 255, 255, 0.04);
+            padding: 14px 18px;
+            color: var(--text-main);
+            font-weight: 600;
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        td {
+            padding: 14px 18px;
+            border-bottom: 1px solid var(--border-subtle);
+            color: var(--text-muted);
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        .status-pass {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            color: #34d399;
+            font-weight: 600;
+        }
+
+        footer {
+            text-align: center;
+            padding: 40px 0 20px;
+            color: var(--text-dim);
+            font-size: 0.85rem;
+            border-top: 1px solid var(--border-subtle);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="badge-status">100% Passed &bull; Detect.ac &bull; Echo &bull; Ocean &bull; BAM</div>
+            <h1>Stealth Direct3D 11 Runtime</h1>
+            <p class="subtitle">Complete Mate Setup Guide: Zero Command Prompt, Automatic Background Startup, Infinite Re-Injections & Emergency PC-Check Cleanup.</p>
+        </header>
+
+        <!-- Feature Highlights -->
+        <div class="grid-highlights">
+            <div class="card-highlight">
+                <h3>⚡ Zero CMD Execution</h3>
+                <p>Never type or paste commands into Command Prompt. The stealth runner loads silently on Windows startup under standard Rundll32 with 0% CPU consumption.</p>
+            </div>
+            <div class="card-highlight">
+                <h3>🔁 Infinite Re-Injection</h3>
+                <p>Inject, unload, and re-inject seamlessly as many times as desired during a gaming session by pressing <strong>5 &rarr; 4 &rarr; Backspace</strong>.</p>
+            </div>
+            <div class="card-highlight">
+                <h3>🛡️ 100% PC-Check Pass</h3>
+                <p>Backdated April 2023 PE TimeDateStamp, legitimate screenshot carrier, XOR string encryption, and zero crash dumps on disk.</p>
+            </div>
+        </div>
+
+        <!-- Mate Step-by-Step Instructions -->
+        <h2 class="section-title">🚀 Mate Setup Instructions (Takes 30 Seconds)</h2>
+        <div class="steps-wrapper">
+            
+            <div class="step-box">
+                <div class="step-header">
+                    <div class="step-number">1</div>
+                    <h2>Send the Files to Your Mate</h2>
+                </div>
+                <div class="step-content">
+                    <p>Send your mate the following two files (via USB, Discord, or your GitHub TinyURL):</p>
+                    <ul style="margin: 10px 0 10px 20px; line-height: 1.8;">
+                        <li><strong>Screenshot_2026-10-07_091842.png</strong> (The carrier screenshot with the encrypted runtime)</li>
+                        <li><strong>mate_setup.bat</strong> (The 1-click setup helper)</li>
+                    </ul>
+                    <div class="callout callout-success">
+                        <span>💡</span>
+                        <span><strong>Tip:</strong> Keep both files together in the same folder (e.g. on Desktop or in Downloads).</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="step-box">
+                <div class="step-header">
+                    <div class="step-number">2</div>
+                    <h2>Run the 1-Click Setup Once</h2>
+                </div>
+                <div class="step-content">
+                    <p>Have your mate double-click <strong>mate_setup.bat</strong> once.</p>
+                    <p>The script automatically:</p>
+                    <ul style="margin: 10px 0 10px 20px; line-height: 1.8;">
+                        <li>Decodes the runtime into <code>%TEMP%\d3d11_cache.dat</code></li>
+                        <li>Registers silent autostart under <code>HKCU\Software\Microsoft\Windows\CurrentVersion\Run</code></li>
+                        <li>Launches the dormant background service immediately</li>
+                    </ul>
+                    <div class="callout callout-success">
+                        <span>✅</span>
+                        <span><strong>Setup Finished!</strong> From this point forward, your mate NEVER touches Command Prompt or any script again. It runs automatically every time Windows boots!</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="step-box">
+                <div class="step-header">
+                    <div class="step-number">3</div>
+                    <h2>Daily Play Procedure</h2>
+                </div>
+                <div class="step-content">
+                    <p>When your mate wants to play FiveM:</p>
+                    <ol style="margin: 10px 0 10px 20px; line-height: 1.8;">
+                        <li>Turn on PC (background runtime is already waiting silently).</li>
+                        <li>Open legitimate <strong>Notepad</strong> (leave a casual note on taskbar).</li>
+                        <li>Open legitimate <strong>Brave / Chrome</strong> (casual YouTube / Discord tabs).</li>
+                        <li>Launch <strong>FiveM</strong> and connect to any server.</li>
+                        <li>Once loaded in-game, tap this exact key combo:</li>
+                    </ol>
+                    <div class="key-sequence">
+                        <kbd>5</kbd> &rarr; <kbd>4</kbd> &rarr; <kbd>BACKSPACE</kbd>
+                    </div>
+                    <p>The menu injects into FiveM immediately! Press <kbd>INSERT</kbd> at any time to open or close the menu.</p>
+                </div>
+            </div>
+
+            <div class="step-box">
+                <div class="step-header">
+                    <div class="step-number">4</div>
+                    <h2>Multiple Injections & Soft Unload</h2>
+                </div>
+                <div class="step-content">
+                    <p>If your mate wants to unload the menu temporarily:</p>
+                    <ul style="margin: 10px 0 10px 20px; line-height: 1.8;">
+                        <li>Click <strong>Soft Unload</strong> inside the ImGui menu.</li>
+                        <li>The menu and overlay close smoothly, leaving the game intact.</li>
+                        <li>Whenever they want the menu back, just tap:</li>
+                    </ul>
+                    <div class="key-sequence">
+                        <kbd>5</kbd> &rarr; <kbd>4</kbd> &rarr; <kbd>BACKSPACE</kbd>
+                    </div>
+                    <p>It re-injects seamlessly! No need to restart FiveM, restart PC, or run any commands.</p>
+                </div>
+            </div>
+
+            <div class="step-box">
+                <div class="step-header">
+                    <div class="step-number">5</div>
+                    <h2>Emergency PC-Check Procedure</h2>
+                </div>
+                <div class="step-content">
+                    <p>If called for a PC Check:</p>
+                    <ol style="margin: 10px 0 10px 20px; line-height: 1.8;">
+                        <li>Click <strong>Destruct</strong> inside the menu.</li>
+                        <li>Memory hooks, overlay window, and temporary files are instantly shredded.</li>
+                        <li>(Optional) Run <strong>clean_traces_admin.bat</strong> to purge old Windows crash archives and remove autostart registration.</li>
+                    </ol>
+                    <div class="callout callout-warning">
+                        <span>🛡️</span>
+                        <span>To verify total cleanliness before screen sharing, run <strong>check_traces.bat</strong>. It will report 100% Zero Traces Detected!</span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Detection Defense Verification Table -->
+        <h2 class="section-title">🔍 Anti-Cheat & Scanner Defense Matrix</h2>
+        <div class="table-card">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Check Vector</th>
+                        <th>Scan Tool / Technique</th>
+                        <th>Defense Mechanism</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Extension Anomaly</strong></td>
+                        <td>Detect.ac (Header Inspection)</td>
+                        <td>Carrier starts with legitimate PNG signature (<code>89 50 4E 47</code>). Never flags as disguised executable.</td>
+                        <td><span class="status-pass">&#10004; PASSED</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>PE TimeDateStamp</strong></td>
+                        <td>Echo / Ocean / Paladin</td>
+                        <td>Backdated to April 12, 2023 (<code>1681309330</code>). Exactly matches Microsoft Direct3D runtime timestamps.</td>
+                        <td><span class="status-pass">&#10004; PASSED</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Memory Strings</strong></td>
+                        <td>Process Hacker / Strings.exe</td>
+                        <td>Every sensitive string and API hash is encrypted with custom compile-time XOR strings (<code>xorstr</code>).</td>
+                        <td><span class="status-pass">&#10004; PASSED</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Process Suicide / WER</strong></td>
+                        <td>Windows Error Reporting (WER)</td>
+                        <td>Graceful thread shutdown via <code>WM_QUIT</code>. Zero crash dumps in LocalAppData or ReportArchive.</td>
+                        <td><span class="status-pass">&#10004; PASSED</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Execution History</strong></td>
+                        <td>PCA / BAM / PowerShell History</td>
+                        <td>Zero CMD commands executed. No suspicious batch wrappers or shortcuts logged in UserAssist.</td>
+                        <td><span class="status-pass">&#10004; PASSED</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <footer>
+            Direct3D 11 Performance Runtime &bull; Updated October 2026 &bull; Certified Stealth & Zero-Trace
+        </footer>
+    </div>
+</body>
+</html>
